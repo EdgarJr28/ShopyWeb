@@ -75,8 +75,14 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose })
   const onSubmit = async (data: ProductFormValues) => {
     try {
       // Convert form data back to product format
-      const productData = {
-        ...data,
+      const productData: Omit<Product, "id"> = {
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        image: data.image,
+        category: data.category,
+        stock: data.stock,
+        rating: data.rating,
         features: data.features.split('\n').filter(f => f.trim()),
         specifications: data.specifications.split('\n').reduce((acc, line) => {
           const [key, value] = line.split(':').map(part => part.trim());

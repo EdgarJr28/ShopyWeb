@@ -1,31 +1,37 @@
-
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { products as allProducts } from "@/data/products";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/FireBaseConfig";
 
 const Products: React.FC = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const categoryParam = queryParams.get("category");
 
-  const [products, setProducts] = useState(allProducts);
+  const [products, setProducts] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   const [category, setCategory] = useState<string | null>(categoryParam);
   const [sortBy, setSortBy] = useState<string>("featured");
 
-  // Extract unique categories
-  const categories = ["All", ...new Set(allProducts.map(product => product.category))];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const snapshot = await getDocs(collection(db, "products"));
+      const fetched = snapshot.docs.map((doc) => doc.data());
+      setAllProducts(fetched);
+      setProducts(fetched);
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
-    // Filter products based on category
     let filtered = [...allProducts];
     if (category && category !== "All") {
-      filtered = filtered.filter(product => product.category === category);
+      filtered = filtered.filter((product) => product.category === category);
     }
 
-    // Sort products
     switch (sortBy) {
       case "price-low":
         filtered.sort((a, b) => a.price - b.price);
@@ -36,13 +42,15 @@ const Products: React.FC = () => {
       case "rating":
         filtered.sort((a, b) => b.rating - a.rating);
         break;
-      default: // featured
+      default:
         filtered.sort((a, b) => b.rating - a.rating);
         break;
     }
 
     setProducts(filtered);
-  }, [category, sortBy]);
+  }, [category, sortBy, allProducts]);
+
+  const categories = ["All", ...new Set(allProducts.map((product) => product.category))];
 
   const handleCategoryChange = (newCategory: string) => {
     setCategory(newCategory === "All" ? null : newCategory);
@@ -58,9 +66,7 @@ const Products: React.FC = () => {
       <main className="flex-grow bg-gray-50 dark:bg-gaming-background">
         <div className="container mx-auto px-4 py-10">
           <h1 className="text-3xl font-bold mb-8">Nuestras Consolas</h1>
-
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Filters */}
             <div className="lg:w-1/4 p-6 bg-white dark:bg-gaming-card rounded-xl shadow-sm">
               <h2 className="text-xl font-semibold mb-4">Categorías</h2>
               <div className="space-y-2">
@@ -80,7 +86,6 @@ const Products: React.FC = () => {
               </div>
             </div>
 
-            {/* Product Grid */}
             <div className="lg:w-3/4">
               <div className="flex justify-between items-center mb-6">
                 <p className="text-gray-600 dark:text-gray-300">

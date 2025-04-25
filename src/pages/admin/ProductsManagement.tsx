@@ -1,22 +1,16 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // 👈 se agrega useEffect
 import AdminLayout from "@/components/layouts/AdminLayout";
 import { useProductStore } from "@/stores/productStore";
 import { Button } from "@/components/ui/button";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
-import { 
-  Edit, 
-  PlusCircle, 
-  Search, 
-  Trash2 
-} from "lucide-react";
+import { Edit, PlusCircle, Search, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import ProductFormModal from "@/components/admin/ProductFormModal";
@@ -24,10 +18,14 @@ import { Product } from "@/types/product";
 
 const ProductsManagement: React.FC = () => {
   const { toast } = useToast();
-  const { products, deleteProduct } = useProductStore();
+  const { products, fetchProducts, deleteProduct } = useProductStore(); // 👈 se agrega fetchProducts
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  useEffect(() => {
+    fetchProducts(); // 👈 carga productos desde Firestore al montar
+  }, []);
 
   const filteredProducts = products.filter(
     (product) =>
@@ -155,13 +153,12 @@ const ProductsManagement: React.FC = () => {
       </div>
 
       {isModalOpen && (
-        <ProductFormModal
-          product={editingProduct}
-          onClose={closeModal}
-        />
+        <ProductFormModal product={editingProduct} onClose={closeModal} />
       )}
     </AdminLayout>
   );
 };
 
 export default ProductsManagement;
+
+

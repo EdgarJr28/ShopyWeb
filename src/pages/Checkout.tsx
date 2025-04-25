@@ -264,6 +264,18 @@ const Checkout: React.FC = () => {
                       ${state.total.toFixed(2)}
                     </span>
                   </div>
+                  <div className="mt-6">
+                    <Button
+                      className="w-full"
+                      onClick={() => {
+                        // Se puede cambiar por el ID del último pedido si querés pasarlo por query
+                        navigate("/order-summary?id=ultimaorden");
+                      }}
+                    >
+                      Ver Resumen de Compra
+                    </Button>
+                  </div>
+
                 </div>
               </div>
             </div>
