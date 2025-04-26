@@ -8,6 +8,7 @@ import {
   updateDoc,
   deleteDoc,
   doc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/FireBaseConfig";
 
@@ -46,11 +47,22 @@ export const useProductStore = create<ProductState>((set, get) => ({
   addProduct: async (productData) => {
     set({ isLoading: true, error: null });
     try {
-      const docRef = await addDoc(collection(db, "products"), productData);
-      const newProduct = { id: docRef.id, ...productData } as Product;
+      // Generar ID basado en timestamp
+      const id = Math.floor(Date.now() / 1000).toString();
+  
+      // Guardar en Firestore con ese ID
+      await setDoc(doc(db, "products", id), {
+        ...productData,
+        id, // también lo guardamos dentro del documento
+      });
+  
+      const newProduct: Product = { ...productData, id };
+  
+      // Actualizar estado local
       set({ products: [...get().products, newProduct], isLoading: false });
     } catch (error) {
       set({ error: "No se pudo agregar el producto", isLoading: false });
+      console.error(error);
     }
   },
 

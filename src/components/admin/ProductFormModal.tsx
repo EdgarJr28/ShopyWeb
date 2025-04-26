@@ -72,10 +72,13 @@ const ProductFormModal: React.FC<ProductFormModalProps> = ({ product, onClose })
     defaultValues
   });
 
+  const timestampId = Math.floor(Date.now() / 1000).toString();
+
   const onSubmit = async (data: ProductFormValues) => {
     try {
       // Convert form data back to product format
-      const productData: Omit<Product, "id"> = {
+      const productData: Product = {
+        id: timestampId,
         name: data.name,
         description: data.description,
         price: data.price,

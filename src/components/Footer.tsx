@@ -80,10 +80,10 @@ const Footer: React.FC = () => {
             </h3>
             <ul className="space-y-2">
               <li className="text-gray-600 dark:text-gray-300">
-                <span className="font-medium">Email:</span> info@gamestore.com
+                <span className="font-medium">Email:</span> juansexyt11@gmail.com
               </li>
               <li className="text-gray-600 dark:text-gray-300">
-                <span className="font-medium">WhatsApp:</span> +1234567890
+                <span className="font-medium">WhatsApp:</span> +573217032514
               </li>
             </ul>
           </div>

@@ -69,7 +69,7 @@ const Checkout: React.FC = () => {
       });
 
       // Generate WhatsApp link with order details
-      const phoneNumber = "1234567890"; // Replace with your actual WhatsApp number
+      const phoneNumber = "573217032514"; // Replace with your actual WhatsApp number
       const whatsappLink = generateWhatsAppLink(phoneNumber, state.items, state.total);
 
       // Clear the cart

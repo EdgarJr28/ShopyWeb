@@ -26,7 +26,7 @@ const Cart: React.FC = () => {
 
   const handleWhatsAppCheckout = () => {
     // Define the WhatsApp phone number
-    const phoneNumber = "1234567890";
+    const phoneNumber = "573217032514";
     
     // Generate WhatsApp link with order details
     const whatsappLink = generateWhatsAppLink(phoneNumber, items, total);

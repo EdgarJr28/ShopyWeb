@@ -24,6 +24,7 @@ import Unauthorized from "./pages/auth/Unauthorized";
 import Dashboard from "./pages/admin/Dashboard";
 import ProductsManagement from "./pages/admin/ProductsManagement";
 import OrdersManagement from "./pages/admin/OrdersManagement";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/profile" element={<Profile />} />
+
+            {/* Rutas protegidas para todos los usuarios */}
 
             {/* Rutas protegidas para customer */}
             <Route path="/cart" element={<Cart />} />

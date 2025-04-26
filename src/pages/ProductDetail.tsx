@@ -1,21 +1,67 @@
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { products } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { db } from "@/lib/FireBaseConfig";
+import { doc, getDoc } from "firebase/firestore";
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
+  
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const product = products.find((p) => p.id === id);
+  useEffect(() => {
+    if (!id) return;
+    
+    const fetchProduct = async () => {
+      try {
+        const docRef = doc(db, "products", id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setProduct(docSnap.data());
+        } else {
+          setProduct(null);
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [id]);
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      toast({
+        title: "Añadido al carrito",
+        description: `${product.name} ha sido añadido al carrito`,
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-grow flex items-center justify-center">
+          <p className="text-lg text-gray-600 dark:text-gray-300">Cargando producto...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -34,14 +80,6 @@ const ProductDetail: React.FC = () => {
       </div>
     );
   }
-
-  const handleAddToCart = () => {
-    addToCart(product);
-    toast({
-      title: "Añadido al carrito",
-      description: `${product.name} ha sido añadido al carrito`,
-    });
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -92,11 +130,8 @@ const ProductDetail: React.FC = () => {
                 <div className="mb-6">
                   <h3 className="text-xl font-semibold mb-3">Características</h3>
                   <ul className="space-y-2">
-                    {product.features.map((feature, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start"
-                      >
+                    {product.features?.map((feature: string, index: number) => (
+                      <li key={index} className="flex items-start">
                         <span className="inline-block w-5 h-5 mr-2 bg-gaming-primary text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs">
                           ✓
                         </span>
@@ -109,7 +144,7 @@ const ProductDetail: React.FC = () => {
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
                   <div className="flex justify-between items-center">
                     <div>
-                      <span className="text-3xl font-bold">${product.price.toFixed(2)}</span>
+                      <span className="text-3xl font-bold">${product.price?.toFixed(2)}</span>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         Stock disponible: {product.stock} unidades
                       </p>
@@ -127,16 +162,19 @@ const ProductDetail: React.FC = () => {
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                   <h3 className="text-xl font-semibold mb-4">Especificaciones</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {Object.entries(product.specifications).map(([key, value]) => (
-                      <div key={key} className="text-sm">
-                        <span className="font-medium text-gray-700 dark:text-gray-200">
-                          {key}:
-                        </span>{" "}
-                        <span className="text-gray-600 dark:text-gray-300">{value}</span>
-                      </div>
-                    ))}
+                    {product.specifications &&
+                      Object.entries(product.specifications).map(([key, value]) => (
+                        <div key={key} className="text-sm">
+                          <span className="font-medium text-gray-700 dark:text-gray-200">
+                            {key}:
+                          </span>{" "}
+                          <span className="text-gray-600 dark:text-gray-300">{String(value)}</span>
+
+                        </div>
+                      ))}
                   </div>
                 </div>
+
               </div>
             </div>
           </div>

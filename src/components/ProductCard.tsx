@@ -12,6 +12,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  console.log("PROD",product.id)
   const { addToCart } = useCart();
   const { toast } = useToast();
 
